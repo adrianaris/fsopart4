@@ -1,4 +1,3 @@
-const http = require('http')
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -7,7 +6,8 @@ const config = require('./utils/config')
 const Blog = require('./models/blog')
 const logger = require('./utils/logger')
 
-console.log(`connecting to ${config.MONGODB_URI}`)
+logger.info(`connecting to ${config.MONGODB_URI}`)
+
 mongoose.connect(config.MONGODB_URI)
     .then(() => {
         logger.info('connected to MongoDB')
@@ -37,7 +37,4 @@ app.post('/api/blogs', (request, response) => {
         })
 })
 
-const PORT = 3003
-app.listen(PORT, () => {
-    console.log(`Server runnning in port ${PORT}`)
-})
+module.exports = app
