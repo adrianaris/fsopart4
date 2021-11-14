@@ -25,57 +25,87 @@ describe('total likes', () => {
         })
     })
     
-    const listWithTwoBlogs = [
-        {
-            title: 'Go To Statement Considered Harmful',
+    test('most blogs test for list with one blog', () => {
+        const result = listHelper.mostBlogs(listWithOneBlog)
+        expect(result).toEqual({
             author: 'Edsger W. Dijkstra',
-            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-            likes: 5,
-            id:'5a422aa71b54a676234d17f8' 
+            blogs: 1
+        })
+    })
+    
+    const listWithMoreBlogs = [
+        {
+        _id: "5a422a851b54a676234d17f7",
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 7,
+        __v: 0
         },
         {
-            title: 'Go To Statement Considered Harmful',
-            author: 'Edsger W. Dijkstra',
-            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-            likes: 5,
-            id:'5a422aa71b54a676234d17f9'            
+        _id: "5a422aa71b54a676234d17f8",
+        title: "Go To Statement Considered Harmful",
+        author: "Edsger W. Dijkstra",
+        url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+        likes: 5,
+        __v: 0
         },
         {
-            title: 'Go To Statement Considered Harmful',
-            author: 'Edsger W. Dijkstra',
-            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-            likes: 299,
-            id:'5a422aa71b54a676234d17f1'            
+        _id: "5a422b3a1b54a676234d17f9",
+        title: "Canonical string reduction",
+        author: "Edsger W. Dijkstra",
+        url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+        likes: 12,
+        __v: 0
         },
         {
-            title: 'Go To Statement Considered Harmful',
-            author: 'Edsger W. Dijkstra',
-            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-            likes: 7,
-            id:'5a422aa71b54a676234d17f2'            
+        _id: "5a422b891b54a676234d17fa",
+        title: "First class tests",
+        author: "Robert C. Martin",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+        likes: 10,
+        __v: 0
         },
         {
-            title: 'Go To Statement Considered Harmful',
-            author: 'Edsger W. Dijkstra',
-            url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-            likes: 2,
-            id:'5a422aa71b54a676234d17f3'            
-        }
+        _id: "5a422ba71b54a676234d17fb",
+        title: "TDD harms architecture",
+        author: "Robert C. Martin",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+        likes: 0,
+        __v: 0
+        },
+        {
+        _id: "5a422bc61b54a676234d17fc",
+        title: "Type wars",
+        author: "Robert C. Martin",
+        url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+        likes: 2,
+        __v: 0
+        }  
     ]
 
-    test('of a bigger list', () => {
-        const result = listHelper.totalLikes(listWithTwoBlogs)
-        expect(result).toBe(318)
+    test('total likes test of a bigger list', () => {
+        const result = listHelper.totalLikes(listWithMoreBlogs)
+        expect(result).toBe(36)
     })
 
     test('favorite blog test for list with multiple blogs', () => {
-        const blog = listHelper.favoriteBlog(listWithTwoBlogs)
+        const blog = listHelper.favoriteBlog(listWithMoreBlogs)
         expect(blog).toEqual({
-            title: 'Go To Statement Considered Harmful',
+            title: 'Canonical string reduction',
             author: 'Edsger W. Dijkstra',
-            likes: 299 
+            likes: 12 
         })
     })
+    
+    test('most blogs test for list with multiple blogs', () => {
+        const result = listHelper.mostBlogs(listWithMoreBlogs)
+        expect(result).toEqual({
+            author: 'Robert C. Martin',
+            blogs: 3
+        })
+    })
+
     const emptyList = []
     test('empty list', () => {
         const result = listHelper.totalLikes(emptyList)
