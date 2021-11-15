@@ -32,9 +32,23 @@ const mostBlogs = (blogs) => {
     }
 }
 
+const mostLikes = (blogs) => {
+    const authors = _.sortedUniq(blogs.map(blog => blog.author))
+    var likesList = []
+    authors.forEach(author => {
+        return likesList.push({
+            author: author,
+            likes: _.reduce(blogs.filter(blog => blog.author === author), (sum, blog) => sum + blog.likes, 0)
+        })    
+    })
+    
+    return likesList.reduce((a, b) => a.likes > b.likes ? a : b, {})
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }

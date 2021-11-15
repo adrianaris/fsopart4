@@ -33,6 +33,14 @@ describe('total likes', () => {
         })
     })
     
+    test('most likes test for list with one blog', () => {
+        const result = listHelper.mostLikes(listWithOneBlog)
+        expect(result).toEqual({
+            author: 'Edsger W. Dijkstra',
+            likes: 5
+        })
+    })
+    
     const listWithMoreBlogs = [
         {
         _id: "5a422a851b54a676234d17f7",
@@ -105,6 +113,14 @@ describe('total likes', () => {
             blogs: 3
         })
     })
+    
+    test('most likes test for list with multiple blogs', () => {
+        const result = listHelper.mostLikes(listWithMoreBlogs)
+        expect(result).toEqual({
+            author: 'Edsger W. Dijkstra',
+            likes: 17
+        })
+    })
 
     const emptyList = []
     test('empty list', () => {
@@ -115,5 +131,15 @@ describe('total likes', () => {
     test('favorite blog test for empty list', () => {
         const blog = listHelper.favoriteBlog(emptyList)
         expect(blog).toEqual({})
+    })
+    
+    test('most blogs test for empty list', () => {
+        const result = listHelper.mostBlogs(emptyList)
+        expect(result).toEqual({})
+    })
+    
+    test('most likes test for empty list', () => {
+        const result = listHelper.mostLikes(emptyList)
+        expect(result).toEqual({})
     })
 })
