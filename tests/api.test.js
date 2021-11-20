@@ -30,6 +30,7 @@ describe('writing to the db tests', () => {
         const blog = {
             title: 'title',
             author: 'author',
+            url: 'url',
             likes: 10
         }
         
@@ -47,6 +48,7 @@ describe('writing to the db tests', () => {
         const noLikes = {
             title: 'no likes',
             author: 'Serbanescu',
+            url: 'adrianserbanescu.com'
         }
         
         await api.post('/api/blogs').send(noLikes)
