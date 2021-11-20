@@ -42,6 +42,18 @@ describe('writing to the db tests', () => {
         const blogTitle = result.body.map(blog => blog.title)
         expect(blogTitle).toContain(blog.title)
     })
+    
+    test('missing like property', async () => {
+        const noLikes = {
+            title: 'no likes',
+            author: 'Serbanescu',
+        }
+        
+        await api.post('/api/blogs').send(noLikes)
+        
+        const result = await api.get('/api/blogs')
+        expect(result.body[helper.blogList.length].likes).toBe(0)
+    })
 })
 
 afterAll(() => {
