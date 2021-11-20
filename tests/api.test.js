@@ -54,6 +54,35 @@ describe('writing to the db tests', () => {
         const result = await api.get('/api/blogs')
         expect(result.body[helper.blogList.length].likes).toBe(0)
     })
+    
+    test('missing title and url post', async () => {
+        const missingTitle = {
+            author: 'author',
+            url: 'url'
+        }
+        
+        const missingURL = {
+            title: 'title',
+            author: 'author'
+        }
+        
+        const missingTitleAndURL = {
+            author: 'author'
+        }
+        
+        await api
+            .post('/api/blogs')
+            .send(missingTitle)
+            .expect(400)
+        await api
+            .post('/api/blogs')
+            .send(missingURL)
+            .expect(400)
+        await api
+            .post('/api/blogs')
+            .send(missingTitleAndURL)
+            .expect(400)
+    })
 })
 
 afterAll(() => {
