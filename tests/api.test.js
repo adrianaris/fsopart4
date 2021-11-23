@@ -10,7 +10,7 @@ beforeEach(async () => {
     await Blog.insertMany(helper.blogList)
 })
 
-describe('tests for initially saved blogs', () => {
+describe('http get request tests', () => {
     test('return all blog posts', async () => {
         const response = await api.get('/api/blogs')
         expect(response.body).toHaveLength(helper.blogList.length)
@@ -25,8 +25,8 @@ describe('tests for initially saved blogs', () => {
     })
 })
 
-describe('writing to the db tests', () => {
-    test('http post request one blog post', async () => {
+describe('http post request tests', () => {
+    test('one blog post', async () => {
         const blog = {
             title: 'title',
             author: 'author',
@@ -53,8 +53,8 @@ describe('writing to the db tests', () => {
         
         await api.post('/api/blogs').send(noLikes)
         
-        const result = await api.get('/api/blogs')
-        expect(result.body[helper.blogList.length].likes).toBe(0)
+        const result = await Blog.findOne(noLikes)
+        expect(result.likes).toBe(0)
     })
     
     test('missing title and url post', async () => {
@@ -85,6 +85,37 @@ describe('writing to the db tests', () => {
             .send(missingTitleAndURL)
             .expect(400)
     })
+})
+
+test('http delete request', async () => {
+    const blogList = await helper.allBlogsInDb()
+    const randomBlog = blogList[Math.floor(Math.random())] 
+
+    await api
+        .delete(`/api/blogs/${randomBlog.id}`)
+        .expect(204)
+    
+    const result = await api.get('/api/blogs')
+    expect(result.body.map(n => n.id)).not.toContain(randomBlog.id)
+})
+
+test('http put request', async () => {
+    const blogList = await helper.allBlogsInDb()
+    const randomBlog = blogList[Math.floor(Math.random())]
+    
+    const blog = {
+        title: "modified",
+        author: 'modified',
+        url: 'modified'
+    }
+
+    await api
+        .put(`/api/blogs/${randomBlog.id}`)
+        .send(blog)
+        .expect(200)
+
+    const test = await Blog.findOne(blog)
+    expect(test).not.toBe(null)
 })
 
 afterAll(() => {
