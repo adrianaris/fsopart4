@@ -5,6 +5,7 @@ require('express-async-errors')
 const cors = require('cors')
 const blogRouter = require('./controllers/bloglist')
 const userRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
 const morgan = require('morgan')
 const logger = require('./utils/logger')
@@ -26,6 +27,7 @@ app.use(express.json())
 
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 
 morgan.token('POST', (req) => {
     return JSON.stringify(req.body)
