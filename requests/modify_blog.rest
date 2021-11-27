@@ -1,8 +1,9 @@
-PUT http://localhost:3003/api/blogs/6199030fb958df42069b2ccc
+PUT http://localhost:3003/api/blogs/618b84cb4327f64b67935749
 Content-Type: application/json
 
 {
        "title": "title modified",
        "author": "author",
+       "user": {},
        "url": "url" 
 }
