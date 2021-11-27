@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_helper')
 const api = supertest(app)
 
@@ -10,7 +11,7 @@ beforeEach(async () => {
     await Blog.insertMany(helper.blogList)
 })
 
-describe('http get request tests', () => {
+describe('blog http get request tests', () => {
     test('return all blog posts', async () => {
         const response = await api.get('/api/blogs')
         expect(response.body).toHaveLength(helper.blogList.length)
@@ -25,7 +26,7 @@ describe('http get request tests', () => {
     })
 })
 
-describe('http post request tests', () => {
+describe('blogs http post request tests', () => {
     test('one blog post', async () => {
         const blog = {
             title: 'title',
@@ -87,7 +88,7 @@ describe('http post request tests', () => {
     })
 })
 
-test('http delete request', async () => {
+test('blogs http delete request', async () => {
     const blogList = await helper.allBlogsInDb()
     const randomBlog = blogList[Math.floor(Math.random())] 
 
@@ -99,7 +100,7 @@ test('http delete request', async () => {
     expect(result.body.map(n => n.id)).not.toContain(randomBlog.id)
 })
 
-test('http put request', async () => {
+test('blogs http put request', async () => {
     const blogList = await helper.allBlogsInDb()
     const randomBlog = blogList[Math.floor(Math.random())]
     
@@ -116,6 +117,56 @@ test('http put request', async () => {
 
     const test = await Blog.findOne(blog)
     expect(test).not.toBe(null)
+})
+
+describe('invalid users are not created', () => {
+    test('missing username', async () => {
+        const user = {
+            name: 'Adrian',
+            password: 'pass'
+        }
+        
+        await api
+            .post('/api/users')
+            .send(user)
+            .expect(400)
+        
+        const test = await User.findOne(user)
+        expect(test).toBe(null)
+    })
+    
+    test('missing password', async () => {
+        const user = {
+            username: 'user',
+            name: 'Adrian'
+        }
+        
+        await api
+            .post('/api/users')
+            .send(user)
+            .expect(400)
+            .expect({ error: "password missing" })
+
+        const test = await User.findOne(user)
+        expect(test).toBe(null)
+    })
+    
+    test('password too short', async () => {
+        const user = {
+            username: 'user',
+            name: 'Adrian',
+            password: '12'
+        }
+        
+        await api
+            .post('/api/users')
+            .send(user)
+            .expect(400)
+            .expect({ error: "password is too short"})
+        
+        const test = await User.findOne(user)
+        expect(test).toBe(null)
+    })
 })
 
 afterAll(() => {
