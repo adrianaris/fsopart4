@@ -9,6 +9,9 @@ const api = supertest(app)
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(helper.blogList)
+    await User.deleteMany({})
+    await api.post('/api/users')
+        .send(helper.user)
 })
 
 describe('blog http get request tests', () => {
@@ -28,15 +31,19 @@ describe('blog http get request tests', () => {
 
 describe('blogs http post request tests', () => {
     test('one blog post', async () => {
+        const user = await User.findOne(helper.user)
         const blog = {
             title: 'title',
             author: 'author',
             url: 'url',
+            userId: user._id,
             likes: 10
         }
         
+        const res = await api.post('/api/login').send(helper.user)
         await api
             .post('/api/blogs')
+            .set('Authorization', `bearer ${res.body.token}`)
             .send(blog)
         
         const result = await api.get('/api/blogs')
@@ -46,13 +53,18 @@ describe('blogs http post request tests', () => {
     })
     
     test('missing like property', async () => {
+        const user = await User.findOne(helper.user)
         const noLikes = {
             title: 'no likes',
             author: 'Serbanescu',
+            userId: user._id,
             url: 'adrianserbanescu.com'
         }
         
-        await api.post('/api/blogs').send(noLikes)
+        const res = await api.post('/api/login').send(helper.user)
+        await api.post('/api/blogs')
+            .set('Authorization', `bearer ${res.body.token}`)
+            .send(noLikes)
         
         const result = await Blog.findOne(noLikes)
         expect(result.likes).toBe(0)
@@ -85,6 +97,25 @@ describe('blogs http post request tests', () => {
             .post('/api/blogs')
             .send(missingTitleAndURL)
             .expect(400)
+    })
+    
+    test('missing token', async () => {
+        const user = await User.findOne(helper.user)
+        const blog = {
+            title: 'title',
+            author: 'author',
+            url: 'url',
+            userId: user._id
+        }
+        
+        await api
+            .post('/api/blogs')
+            .send(blog)
+            .expect(401)
+            .expect({ error: 'invalid token' })
+        
+        const test = await Blog.findOne(blog)
+        expect(test).toBe(null)
     })
 })
 
@@ -122,7 +153,7 @@ test('blogs http put request', async () => {
 describe('invalid users are not created', () => {
     test('missing username', async () => {
         const user = {
-            name: 'Adrian',
+            name: 'name',
             password: 'pass'
         }
         
@@ -138,7 +169,7 @@ describe('invalid users are not created', () => {
     test('missing password', async () => {
         const user = {
             username: 'user',
-            name: 'Adrian'
+            name: 'name'
         }
         
         await api
@@ -154,7 +185,7 @@ describe('invalid users are not created', () => {
     test('password too short', async () => {
         const user = {
             username: 'user',
-            name: 'Adrian',
+            name: 'name',
             password: '12'
         }
         
@@ -167,6 +198,21 @@ describe('invalid users are not created', () => {
         const test = await User.findOne(user)
         expect(test).toBe(null)
     })
+})
+
+test('adding user', async () => {
+    const user = {
+        username: 'addinguser',
+        name: 'name',
+        password: 'password'
+    }
+    
+    await api
+        .post('/api/users')
+        .send(user)
+        .expect(200)
+    const test = await User.findOne(user)
+    expect(test).not.toBe(null)
 })
 
 afterAll(() => {
